@@ -15,9 +15,14 @@ import PaymentConfirmation from './pages/PaymentConfirmation'
 import Hotel from './pages/Hotel'
 import { CarProvider } from './context/CarContext'
 import Car from './pages/Car'
+import {BrowserRouter} from 'react-router-dom'
+import { FlightProvider } from './context/FlightContext.jsx'
+
 
 function App() {
   return (
+    <BrowserRouter>
+  <FlightProvider>
     <AuthProvider>
       <CarProvider>
       <HotelProvider>
@@ -43,6 +48,8 @@ function App() {
       </HotelProvider>
       </CarProvider>
     </AuthProvider>
+    </FlightProvider>
+    </BrowserRouter>
   )
 }
 
