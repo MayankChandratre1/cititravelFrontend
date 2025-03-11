@@ -17,7 +17,7 @@ const initialState = {
         }],
         TripType: TRIP_TYPES.ONE_WAY
     },
-    searchResults: dummySearchResults,
+    searchResults: null,
     revalidationResults: null,
     revalidationLoading: false,
     revalidationError: null,
