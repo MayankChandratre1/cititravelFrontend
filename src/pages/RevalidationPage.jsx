@@ -112,7 +112,10 @@ const RevalidationPage = () => {
         );
     };
 
-    const itineraries = revalidationResults.groupedItineraryResponse.itineraryGroups[0].itineraries;
+    const itineraries = revalidationResults.groupedItineraryResponse.itineraryGroups.length > 0 ? revalidationResults.groupedItineraryResponse.itineraryGroups[0].itineraries : null;
+
+
+    
     const currentItinerary = itineraries[activeItineraryIndex];
     const fare = currentItinerary.pricingInformation[0].fare;
 

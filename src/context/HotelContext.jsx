@@ -90,6 +90,10 @@ export const HotelProvider = ({ children }) => {
         dispatch({ type: 'SET_SELECTED_HOTEL', payload: hotel });
     };
 
+    const setHotelDetails = (details) => {
+        dispatch({ type: 'SET_HOTEL_DETAILS', payload: details });
+    };
+
     return (
         <HotelContext.Provider 
             value={{ 
@@ -97,7 +101,9 @@ export const HotelProvider = ({ children }) => {
                 searchHotels, 
                 getHotelDetails, 
                 updateSearchParams,
-                selectHotel
+                selectHotel,
+                setHotelDetails,
+                hotelDetails: state.hotelDetails
             }}
         >
             {children}

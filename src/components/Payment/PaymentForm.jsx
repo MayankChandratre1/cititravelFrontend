@@ -170,14 +170,14 @@ const PaymentConfirmation = () => {
                     </div>
 
                     {/* Stripe Payment Form */}
-                    <Elements stripe={stripePromise}>
+                    {/* <Elements stripe={stripePromise}>
                         <CheckoutForm 
                             totalAmount={totalAmount} 
                             currency={currency}
                             onSuccess={handlePaymentSuccess}
                             onError={handlePaymentError}
                         />
-                    </Elements>
+                    </Elements> */}
 
                     {/* Debug Button - Remove in production */}
                     <button

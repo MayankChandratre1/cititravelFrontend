@@ -4,10 +4,131 @@ import { useAuth } from '../context/AuthContext';
 import useFlightSearch from '../hooks/useFlightSearch';
 import Navbar from '../components/Home/Navbar';
 import { CreditCard, MapPin, Users, ChevronRight } from 'lucide-react';
-import CardDetailsForm from '../components/Checkout/CardDetailsForm';
 import BillingAddressForm from '../components/Checkout/BillingAddressForm';
 import PassengerForm from '../components/Checkout/PassengerForm';
 import { useCheckout } from '../context/CheckoutContext';
+
+const CardDetailsForm = ({ formData, setFormData }) => {
+    const formatCardNumber = (value) => {
+        const v = value.replace(/\s+/g, '').replace(/[^0-9]/gi, '');
+        const matches = v.match(/\d{4,16}/g);
+        const match = matches && matches[0] || '';
+        const parts = [];
+
+        for (let i = 0, len = match.length; i < len; i += 4) {
+            parts.push(match.substring(i, i + 4));
+        }
+
+        if (parts.length) {
+            return parts.join(' ');
+        } else {
+            return value;
+        }
+    };
+
+    const formatExpiryDate = (value) => {
+        // Remove all non-digits
+        const cleaned = value.replace(/\D/g, '');
+        
+        // Get month and year parts
+        const month = cleaned.substring(0, 2);
+        const year = cleaned.substring(2, 4);
+
+        // Validate month
+        if (month.length === 2) {
+            const monthNum = parseInt(month);
+            if (monthNum < 1 || monthNum > 12) {
+                return value.substring(0, value.length - 1);
+            }
+        }
+
+        // Format as MM/YY
+        if (cleaned.length >= 2) {
+            return `${month}/${year}`;
+        }
+        
+        return month;
+    };
+
+    const handleCardNumberChange = (e) => {
+        let value = formatCardNumber(e.target.value);
+        if (value.length <= 19) { // 16 digits + 3 spaces
+            setFormData(prev => ({
+                ...prev,
+                billing: {
+                    ...prev.billing,
+                    cardNumber: value
+                }
+            }));
+        }
+    };
+
+    const handleExpiryDateChange = (e) => {
+        let value = e.target.value.replace(/\D/g, '');
+        
+        if (value.length <= 4) {
+            value = formatExpiryDate(value);
+            setFormData(prev => ({
+                ...prev,
+                billing: {
+                    ...prev.billing,
+                    expiryDate: value
+                }
+            }));
+        }
+    };
+
+    return (
+        <div className="space-y-6">
+            <h3 className="text-xl font-semibold">Payment Details</h3>
+            <div className="grid grid-cols-1 gap-6">
+                <div>
+                    <label className="block text-sm font-medium text-gray-700">Card Number</label>
+                    <input
+                        type="text"
+                        name="cardNumber"
+                        value={formData.billing.cardNumber}
+                        onChange={handleCardNumberChange}
+                        placeholder="XXXX XXXX XXXX XXXX"
+                        className="mt-1 block w-full p-2 rounded-md border-gray-300 shadow-sm focus:border-blue-500 focus:ring-blue-500"
+                        maxLength="19"
+                    />
+                </div>
+
+                <div>
+                    <label className="block text-sm font-medium text-gray-700">Expiry Date</label>
+                    <input
+                        type="text"
+                        name="expiryDate"
+                        value={formData.billing.expiryDate}
+                        onChange={handleExpiryDateChange}
+                        placeholder="MM/YY"
+                        className="mt-1 block w-full p-2 rounded-md border-gray-300 shadow-sm focus:border-blue-500 focus:ring-blue-500"
+                        maxLength="5"
+                    />
+                </div>
+
+                <div>
+                    <label className="block text-sm font-medium text-gray-700">Cardholder Name</label>
+                    <input
+                        type="text"
+                        name="cardHolderName"
+                        value={formData.billing.cardHolderName}
+                        onChange={(e) => setFormData(prev => ({
+                            ...prev,
+                            billing: {
+                                ...prev.billing,
+                                cardHolderName: e.target.value.toUpperCase()
+                            }
+                        }))}
+                        placeholder="NAME ON CARD"
+                        className="mt-1 block w-full p-2 rounded-md border-gray-300 shadow-sm focus:border-blue-500 focus:ring-blue-500"
+                    />
+                </div>
+            </div>
+        </div>
+    );
+};
 
 const Checkout = () => {
     const navigate = useNavigate();
@@ -93,7 +214,7 @@ const Checkout = () => {
                 const flight = revalidationResults.groupedItineraryResponse.scheduleDescs.find(
                     s => s.id === schedule.ref
                 );
-                let depDate =revalidationResults.groupedItineraryResponse.itineraryGroups[0].groupDescription.legDescriptions[0].departureDate;
+                let depDate = revalidationResults.groupedItineraryResponse.itineraryGroups[0].groupDescription.legDescriptions[0].departureDate;
                 if (flight.departureDateAdjustment) {
                     const adjustedDate = new Date(depDate);
                     adjustedDate.setDate(adjustedDate.getDate() + flight.departureDateAdjustment);
@@ -104,11 +225,15 @@ const Checkout = () => {
                     : flight.departure.time.split("-")[0]));
                 arrDate.setMinutes(arrDate.getMinutes() + flight.elapsedTime);
                 arrDate = arrDate.toISOString().split('T')[0];
-
+    
+                // Format times without timezone information
+                const depTime = formatTimeWithoutTimezone(flight.departure.time);
+                const arrTime = formatTimeWithoutTimezone(flight.arrival.time);
+    
                 return {
-                    departureDateTime: depDate + "T" + flight.departure.time,
-                    arrivalDateTime: arrDate + "T" + flight.arrival.time,
-                    flightNumber: flight.carrier.marketingFlightNumber,
+                    departureDateTime: depDate + "T" + depTime,
+                    arrivalDateTime: arrDate + "T" + arrTime,
+                    flightNumber: flight.carrier.marketingFlightNumber.toString(),
                     airlineCode: flight.carrier.marketing,
                     origin: flight.departure.airport,
                     destination: flight.arrival.airport,
@@ -116,7 +241,7 @@ const Checkout = () => {
                 };
             });
         });
-
+    
         const payload = {
             CreatePassengerNameRecordRQ: {
                 version: "2.4.0",
@@ -137,6 +262,11 @@ const Checkout = () => {
                             Address: formData.address.email,
                             Type: "BC"
                         }]
+                    },
+                    AgencyInfo:{
+                        Ticketing:{
+                            TicketType: "7TAW"
+                        }
                     }
                 },
                 AirBook: {
@@ -150,7 +280,7 @@ const Checkout = () => {
                             FlightNumber: segment.flightNumber,
                             NumberInParty: formData.passengers.length.toString(),
                             ResBookDesigCode: segment.bookingClass,
-                            Status: "NN",
+                            Status: "HK",
                             MarketingAirline: {
                                 Code: segment.airlineCode,
                                 FlightNumber: segment.flightNumber
@@ -172,6 +302,17 @@ const Checkout = () => {
                                 PassengerType: formData.passengers.map(passenger => ({
                                     Code: getPassengerType(passenger)
                                 }))
+                            },
+                            FOP_Qualifiers: {
+                                BasicFOP:{
+                                    CC_Info: {
+                                        PaymentCard: {
+                                            Code: getCardType(formData.billing.cardNumber),
+                                            Number: Number(formData.billing.cardNumber.trim().split(' ').join('')),
+                                            ExpireDate: formatExpiryDate(formData.billing.expiryDate)
+                                        }
+                                    }
+                                }
                             }
                         }
                     }
@@ -185,23 +326,19 @@ const Checkout = () => {
                 }
             }
         };
-
-        // Add payment information
-        payload.CreatePassengerNameRecordRQ.FormOfPayment = {
-            PaymentInfo: {
-                Payment: {
-                    CC_Info: {
-                        PaymentCard: {
-                            CardCode: getCardType(formData.billing.cardNumber),
-                            CardNumber: formData.billing.cardNumber,
-                            ExpiryDate: formatExpiryDate(formData.billing.expiryDate)
-                        }
-                    }
-                }
-            }
-        };
-
+    
         return payload;
+    };
+    
+    // Helper function to format time without timezone information
+    const formatTimeWithoutTimezone = (timeString) => {
+        // Remove timezone offset if present
+        if (timeString.includes('+') || timeString.includes('-')) {
+            // Split at the + or - character
+            const timeParts = timeString.split(/[+-]/)[0];
+            return timeParts;
+        }
+        return timeString;
     };
 
     const getCardType = (cardNumber) => {

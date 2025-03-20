@@ -1,6 +1,9 @@
 import React, { useState } from 'react';
 import { Star, MapPin } from 'lucide-react';
 import DetailsModal from './DetailsModal';
+import { useNavigate } from 'react-router-dom';
+import axiosInstance from '../../api/api';
+import { useHotel } from '../../context/HotelContext';
 
 const ITEMS_PER_PAGE = 5;
 
@@ -8,6 +11,8 @@ const HotelList = ({ results, filters }) => {
     const [currentPage, setCurrentPage] = useState(1);
     const [selectedHotel, setSelectedHotel] = useState(null);
     const [showModal, setShowModal] = useState(false);
+    const navigate = useNavigate();
+    const { setHotelDetails } = useHotel();
 
     if (!results?.GetHotelAvailRS?.HotelAvailInfos?.HotelAvailInfo) {
         return (
@@ -76,6 +81,51 @@ const HotelList = ({ results, filters }) => {
                 {page}
             </button>
         ));
+    };
+
+    const handleViewDetails = async (hotel) => {
+        try {
+            const rateKey = hotel.HotelRateInfo.RateInfos?.ConvertedRateInfo?.[0]?.RateKey;
+            
+            const payload = {
+                HotelPriceCheckRQ: {
+                    
+                    RateInfoRef: {
+                        RateKey: rateKey,
+                        StayDateTimeRange: {
+                            StartDate:  hotel.HotelRateInfo?.RateInfos?.ConvertedRateInfo[0]?.StartDate,
+                            EndDate:  hotel.HotelRateInfo?.RateInfos?.ConvertedRateInfo[0]?.EndDate
+                        },
+                        Rooms: {
+                            Room: [
+                                {
+                                    Index: 1,
+                                    Adults: 1,
+                                    Children: 0
+                                }
+                            ]
+                        }
+                    }
+                }
+            };
+
+            
+
+            const response = await axiosInstance.post('/api/v1/sabre/hotels/details', payload);
+            console.log('Hotel Details Response:', response.data);
+            setHotelDetails(response.data);
+
+            navigate(`/hotel/${hotel.HotelInfo.HotelCode}`, {
+                state: { 
+                    hotelDetails: hotel
+                }
+            });
+        } catch (error) {
+            console.error('Error fetching hotel details:', error);
+            navigate(`/hotel/${hotel.HotelInfo.HotelCode}`, {
+                state: { hotelDetails: hotel }
+            });
+        }
     };
 
     return (
@@ -186,10 +236,7 @@ const HotelList = ({ results, filters }) => {
                                     </div>
                                     
                                     <button 
-                                        onClick={() => {
-                                            setSelectedHotel(hotel);
-                                            setShowModal(true);
-                                        }}
+                                        onClick={() => handleViewDetails(hotel)}
                                         className="bg-blue-600 text-white px-6 py-2 rounded-lg hover:bg-blue-700"
                                     >
                                         View Details

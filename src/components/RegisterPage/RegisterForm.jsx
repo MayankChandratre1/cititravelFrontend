@@ -81,7 +81,7 @@ const RegisterForm = () => {
     if (formData.email) {
       setLoading({ ...loading, sendingOtp: true });
       try {
-        await axiosInstance.post('/api/auth/send-verification-email', { email: formData.email });
+        await axiosInstance.post('/api/v1/auth/send-verification-email', { email: formData.email });
         setOtpSent(true);
       } catch (err) {
         console.log(err);
@@ -95,7 +95,7 @@ const RegisterForm = () => {
     if (formData.email && formData.emailOtp) {
       setLoading({ ...loading, verifyingOtp: true });
       try {
-        await axiosInstance.post('/api/auth/verify', { 
+        await axiosInstance.post('/api/v1/auth/verify', { 
           email: formData.email, 
           otp: formData.emailOtp 
         });
@@ -112,7 +112,7 @@ const RegisterForm = () => {
     if(formData.email && formData.password && formData.firstName && formData.lastName){
         try{
             console.log('Register user:', formData);
-            await axiosInstance.post('/api/auth/register', { email: formData.email, password: formData.password, firstname: formData.firstName, lastname: formData.lastName });
+            await axiosInstance.post('/api/v1/auth/register', { email: formData.email, password: formData.password, firstname: formData.firstName, lastname: formData.lastName });
             navigate('/login');
         }catch(Err){
             console.log(Err)

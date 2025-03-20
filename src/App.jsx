@@ -17,7 +17,9 @@ import { CarProvider } from './context/CarContext'
 import Car from './pages/Car'
 import {BrowserRouter} from 'react-router-dom'
 import { FlightProvider } from './context/FlightContext.jsx'
-
+import HotelDetails from './pages/HotelDetails.jsx'
+import HotelPayment from './pages/HotelPayment'
+import HotelBookingConfirmation from './pages/HotelBookingConfirmation';
 
 function App() {
   return (
@@ -31,6 +33,9 @@ function App() {
             <Route path='/' element={<Home />} />
             <Route path='/flight' element={<Flights />} />
             <Route path='/hotel' element={<Hotel />} />
+            <Route path='/hotel/:id' element={<HotelDetails />} />
+            <Route path='/hotel/process-payment' element={<HotelPayment />} />
+            <Route path='/booking-confirmation' element={<HotelBookingConfirmation />} />
             <Route path='/car' element={<Car />} />
             <Route path='/login' element={<LoginPage />} />
             <Route path='/register' element={<RegisterPage />} />
