@@ -42,7 +42,7 @@ const ItineraryList = ({ itineraries }) => {
     const handlePassportUpdate = async (itineraryId, passportData) => {
         setLoading(true);
         try {
-            const response = await axiosInstance.post('/api/v1/user/updateIntinarary', {
+            const response = await axiosInstance.post('/api/v1/sabre/updatepnr', {
                 itineraryId,
                 data: passportData,
                 pnr: selectedItinerary.pnr

@@ -172,7 +172,7 @@ const HotelList = ({ results, filters }) => {
                 const rateInfo = hotel.HotelRateInfo;
                 const amenities = hotelInfo.Amenities?.Amenity || [];
                 const lowestRate = rateInfo.RateInfos?.ConvertedRateInfo?.[0];
-                const hotelImage = hotel?.HotelImageInfo?.ImageItem?.Image?.Url || "https://www.placeholder.co/400x400"
+                const hotelImage = hotel?.HotelImageInfo?.ImageItem?.Image?.Url || "/HotelPlaceholder.svg"
 
                 return (
                     <div key={hotelInfo.HotelCode} className="bg-white rounded-lg shadow-md overflow-hidden">

@@ -35,22 +35,12 @@ const HotelDetails = () => {
                 <div className="grid grid-cols-1 md:grid-cols-2 gap-4 mb-8">
                     <div className="h-[400px]">
                         <img
-                            src={hotel?.HotelImageInfo?.ImageItem?.Image?.Url || "https://via.placeholder.com/800x400"}
+                            src={hotel?.HotelImageInfo?.ImageItem?.Image?.Url || "/HotelPlaceholder.svg"}
                             alt={hotelInfo.HotelName}
-                            className="w-full h-full object-cover rounded-lg"
+                            className="w-full h-full object-cover rounded-lg object-top"
                         />
                     </div>
-                    <div className="grid grid-cols-2 gap-4">
-                        {[...Array(4)].map((_, idx) => (
-                            <div key={idx} className="h-[190px]">
-                                <img
-                                    src="https://via.placeholder.com/400x200"
-                                    alt="Hotel"
-                                    className="w-full h-full object-cover rounded-lg"
-                                />
-                            </div>
-                        ))}
-                    </div>
+                
                 </div>
 
                 {/* Hotel Info */}
@@ -136,7 +126,7 @@ const HotelDetails = () => {
                                                 </div>
                                             )}
 
-                                            {/* Additional Details */}
+                                            {/* Additional Details
                                             {ratePlan.RateInfo?.AdditionalDetails?.AdditionalDetail?.map((detail, idx) => (
                                                 <div key={idx} className="text-gray-700">
                                                     <h4 className="font-medium mb-1">{detail.Description}</h4>
@@ -144,7 +134,7 @@ const HotelDetails = () => {
                                                         <p key={i} className="text-sm">{text}</p>
                                                     ))}
                                                 </div>
-                                            ))}
+                                            ))} */}
                                         </div>
                                     </section>
                                 )}
