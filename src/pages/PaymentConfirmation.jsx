@@ -9,7 +9,7 @@ import axiosInstance from '../api/api';
 import { cardCodes } from '../lib/consts/cards';
 
 // Replace with your Stripe publishable key
-const stripePromise = loadStripe('pk_test_51QwiF6RsjqJpXy6f0svgYic3ymED04Ol8VnSuc1Tyx97Sf99dme3UCNtT10vGxSgllBFrGiNvpwwEBd9mRomP6Fj00eGGqgKwz');
+const stripePromise = loadStripe(import.meta.env.VITE_STRIPE_PUBLISHABLE_KEY);
 
 const PaymentConfirmation = () => {
     const { checkoutData, getTotalWithFees } = useCheckout();

@@ -18,6 +18,7 @@ npm install
 3. Create a `.env` file in the root directory with the following variables:
 ```env
 VITE_API_URL="your backend url"  # Development API URL
+VITE_STRIPE_PUBLISHABLE_KEY: Your Stripe publishable key
 ```
 
 4. Start the development server:
@@ -30,6 +31,7 @@ npm run dev
 - `VITE_API_URL`: Backend API URL
   - Development: `http://localhost:3001`
   - Production: Your deployed API URL
+- `VITE_STRIPE_PUBLISHABLE_KEY`: Your Stripe publishable key
 
 ## Deployment
 
