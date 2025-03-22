@@ -48,9 +48,9 @@ const ItineraryList = ({ itineraries }) => {
                 pnr: selectedItinerary.pnr
             });
 
-            if (response.data.success) {
+            if (response.data.UpdatePassengerNameRecordRS.ApplicationResults.status == 'Complete') {
                 setShowPassportModal(false);
-                // You might want to refresh the itineraries here
+                alert("Successfully updated passport details");
             }
         } catch (error) {
             console.error('Error updating passport details:', error);
